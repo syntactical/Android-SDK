@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.Utils;
+import com.radiusnetworks.ibeacon.IBeacon;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +32,7 @@ public class LeDeviceListAdapter extends BaseAdapter {
     this.beacons = new ArrayList<Beacon>();
   }
 
-  public void replaceWith(Collection<Beacon> newBeacons) {
+  public void replaceWith(Collection<IBeacon> newBeacons) {
     this.beacons.clear();
     this.beacons.addAll(newBeacons);
     Collections.sort(beacons, new Comparator<Beacon>() {
