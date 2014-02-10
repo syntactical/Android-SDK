@@ -54,12 +54,22 @@ public class NotifyDemoActivity extends Activity implements IBeaconConsumer {
         beaconManager.setMonitorNotifier(new MonitorNotifier() {
             @Override
             public void didEnterRegion(Region region) {
-                postNotification("Entered Region");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        postNotification("Entered Region");
+                    }
+                });
             }
 
             @Override
             public void didExitRegion(Region region) {
-                postNotification("Exited Region");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        postNotification("Exited Region");
+                    }
+                });
             }
 
             @Override
