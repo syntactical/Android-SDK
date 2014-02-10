@@ -14,7 +14,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 import com.radiusnetworks.ibeacon.*;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,12 +24,13 @@ public class ListBeaconsActivity extends Activity implements IBeaconConsumer {
     private static final String TAG = ListBeaconsActivity.class.getSimpleName();
 
     public static final String EXTRAS_TARGET_ACTIVITY = "extrasTargetActivity";
-    public static final String EXTRAS_BEACON = "extrasBeacon";
+    public static final String EXTRAS_BEACON_MAJOR = "extrasBeaconMajor";
+    public static final String EXTRAS_BEACON_MINOR = "extrasBeaconMinor";
 
     private static final int REQUEST_ENABLE_BT = 1234;
     private static final String ESTIMOTE_BEACON_PROXIMITY_UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
     private static final String ESTIMOTE_IOS_PROXIMITY_UUID = "8492E75F-4FD6-469D-B132-043FE94921D8";
-    private static final Region ALL_ESTIMOTE_BEACONS_REGION = new Region("rid", null, null, null);
+    private static final Region ALL_BEACONS_REGION = new Region("rid", null, null, null);
 
     private IBeaconManager beaconManager = IBeaconManager.getInstanceForApplication(this);
 
@@ -118,7 +118,8 @@ public class ListBeaconsActivity extends Activity implements IBeaconConsumer {
                     try {
                         Class<?> clazz = Class.forName(getIntent().getStringExtra(EXTRAS_TARGET_ACTIVITY));
                         Intent intent = new Intent(ListBeaconsActivity.this, clazz);
-                        intent.putExtra(EXTRAS_BEACON, (Serializable) adapter.getItem(position));
+                        intent.putExtra(EXTRAS_BEACON_MAJOR, adapter.getItem(position).getMajor());
+                        intent.putExtra(EXTRAS_BEACON_MINOR, adapter.getItem(position).getMinor());
                         startActivity(intent);
                     } catch (ClassNotFoundException e) {
                         Log.e(TAG, "Finding class by name failed", e);
@@ -151,7 +152,7 @@ public class ListBeaconsActivity extends Activity implements IBeaconConsumer {
         });
 
         try {
-            beaconManager.startRangingBeaconsInRegion(ALL_ESTIMOTE_BEACONS_REGION);
+            beaconManager.startRangingBeaconsInRegion(ALL_BEACONS_REGION);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
