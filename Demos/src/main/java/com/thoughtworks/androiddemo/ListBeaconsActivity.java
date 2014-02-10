@@ -8,10 +8,13 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.radiusnetworks.ibeacon.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +46,7 @@ public class ListBeaconsActivity extends Activity implements IBeaconConsumer {
         adapter = new LeDeviceListAdapter(this);
         ListView list = (ListView) findViewById(R.id.device_list);
         list.setAdapter(adapter);
-        //list.setOnItemClickListener(createOnItemClickListener());
+        list.setOnItemClickListener(createOnItemClickListener());
 
         // If Bluetooth is not enabled, let user enable it.
         verifyBluetooth();
@@ -107,25 +110,23 @@ public class ListBeaconsActivity extends Activity implements IBeaconConsumer {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-//    Return to this when distance or notify demo is implemented
-//
-//    private AdapterView.OnItemClickListener createOnItemClickListener() {
-//        return new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                if (getIntent().getStringExtra(EXTRAS_TARGET_ACTIVITY) != null) {
-//                    try {
-//                        Class<?> clazz = Class.forName(getIntent().getStringExtra(EXTRAS_TARGET_ACTIVITY));
-//                        Intent intent = new Intent(ListBeaconsActivity.this, clazz);
-//                        intent.putExtra(EXTRAS_BEACON, adapter.getItem(position));
-//                        startActivity(intent);
-//                    } catch (ClassNotFoundException e) {
-//                        Log.e(TAG, "Finding class by name failed", e);
-//                    }
-//                }
-//            }
-//        };
-//    }
+    private AdapterView.OnItemClickListener createOnItemClickListener() {
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (getIntent().getStringExtra(EXTRAS_TARGET_ACTIVITY) != null) {
+                    try {
+                        Class<?> clazz = Class.forName(getIntent().getStringExtra(EXTRAS_TARGET_ACTIVITY));
+                        Intent intent = new Intent(ListBeaconsActivity.this, clazz);
+                        intent.putExtra(EXTRAS_BEACON, (Serializable) adapter.getItem(position));
+                        startActivity(intent);
+                    } catch (ClassNotFoundException e) {
+                        Log.e(TAG, "Finding class by name failed", e);
+                    }
+                }
+            }
+        };
+    }
 
     @Override
     public void onIBeaconServiceConnect() {

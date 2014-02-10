@@ -11,18 +11,18 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
-import com.estimote.sdk.Beacon;
-import com.estimote.sdk.BeaconManager;
-import com.estimote.sdk.Region;
+import com.radiusnetworks.ibeacon.Region;
+import com.radiusnetworks.ibeacon.IBeacon;
+import com.radiusnetworks.ibeacon.IBeaconConsumer;
+import com.radiusnetworks.ibeacon.IBeaconManager;
+import com.radiusnetworks.ibeacon.MonitorNotifier;
 
-import static com.estimote.sdk.BeaconManager.MonitoringListener;
-
-public class NotifyDemoActivity extends Activity {
+public class NotifyDemoActivity extends Activity implements IBeaconConsumer {
 
     private static final String TAG = NotifyDemoActivity.class.getSimpleName();
     private static final int NOTIFICATION_ID = 123;
 
-    private BeaconManager beaconManager;
+    private IBeaconManager beaconManager;
     private NotificationManager notificationManager;
     private Region region;
 
@@ -32,21 +32,12 @@ public class NotifyDemoActivity extends Activity {
         setContentView(R.layout.notify_demo);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Beacon beacon = getIntent().getParcelableExtra(ListBeaconsActivity.EXTRAS_BEACON);
-        region = new Region("regionId", beacon.getProximityUUID(), beacon.getMajor(), beacon.getMinor());
+        IBeacon beacon = (IBeacon) getIntent().getSerializableExtra(ListBeaconsActivity.EXTRAS_BEACON);
+        region = new Region("regionId", beacon.getProximityUuid(), beacon.getMajor(), beacon.getMinor());
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        beaconManager = new BeaconManager(this);
-        beaconManager.setMonitoringListener(new MonitoringListener() {
-            @Override
-            public void onEnteredRegion(Region region) {
-                postNotification("Entered region");
-            }
+        beaconManager = IBeaconManager.getInstanceForApplication(this);
 
-            @Override
-            public void onExitedRegion(Region region) {
-                postNotification("Exited region");
-            }
-        });
+        beaconManager.bind(this);
     }
 
     @Override
@@ -59,26 +50,33 @@ public class NotifyDemoActivity extends Activity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-
-        notificationManager.cancel(NOTIFICATION_ID);
-        beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
+    public void onIBeaconServiceConnect() {
+        beaconManager.setMonitorNotifier(new MonitorNotifier() {
             @Override
-            public void onServiceReady() {
-                try {
-                    beaconManager.startMonitoring(region);
-                } catch (RemoteException e) {
-                    Log.d(TAG, "Error while starting monitoring");
-                }
+            public void didEnterRegion(com.radiusnetworks.ibeacon.Region region) {
+                postNotification("Entered Region");
+            }
+
+            @Override
+            public void didExitRegion(com.radiusnetworks.ibeacon.Region region) {
+                postNotification("Exited Region");
+            }
+
+            @Override
+            public void didDetermineStateForRegion(int state, com.radiusnetworks.ibeacon.Region region) {
+                Log.i(TAG, "I have just switched from seeing/not seeing iBeacons: " + state);
             }
         });
+
+        try {
+            beaconManager.startMonitoringBeaconsInRegion(region);
+        } catch (RemoteException e) { e.printStackTrace(); }
     }
 
     @Override
     protected void onDestroy() {
         notificationManager.cancel(NOTIFICATION_ID);
-        beaconManager.disconnect();
+        beaconManager.unBind(this);
         super.onDestroy();
     }
 
