@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.radiusnetworks.ibeacon.*;
 
 import java.util.Collection;
+import java.util.List;
 
 public class DistanceBeaconActivity extends Activity implements IBeaconConsumer{
 
@@ -21,12 +22,13 @@ public class DistanceBeaconActivity extends Activity implements IBeaconConsumer{
     private static final double RELATIVE_STOP_POS = 885.0 / 1110.0;
 
     private IBeaconManager beaconManager;
-    private IBeacon beacon;
     private Region region;
 
     private View dotView;
     private int startY = -1;
     private int segmentLength = -1;
+    private int major;
+    private int minor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +38,11 @@ public class DistanceBeaconActivity extends Activity implements IBeaconConsumer{
         setContentView(R.layout.distance_view);
         dotView = findViewById(R.id.dot);
 
-        beacon = (IBeacon) getIntent().getSerializableExtra(ListBeaconsActivity.EXTRAS_BEACON);
-        region = new Region("regionid", beacon.getProximityUuid(), beacon.getMajor(), beacon.getMinor());
-        if (beacon == null) {
-            Toast.makeText(this, "Beacon not found in intent extras", Toast.LENGTH_LONG).show();
-            finish();
-        }
+
+        major = getIntent().getIntExtra(ListBeaconsActivity.EXTRAS_BEACON_MAJOR, -1);
+        minor = getIntent().getIntExtra(ListBeaconsActivity.EXTRAS_BEACON_MINOR, -1);
+
+        region = new Region("beacon", null, major, minor);
 
         beaconManager = IBeaconManager.getInstanceForApplication(this);
         beaconManager.bind(this);
@@ -52,41 +53,37 @@ public class DistanceBeaconActivity extends Activity implements IBeaconConsumer{
         beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<IBeacon> iBeacons, Region region) {
-                final Collection<IBeacon> beaconCollection = iBeacons;
+                final List<IBeacon> beaconCollection = (List) iBeacons;
+
+                final IBeacon foundBeacon = beaconCollection.get(0);
+
+                final View view = findViewById(R.id.sonar);
+                view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                        startY = (int) (RELATIVE_START_POS * view.getMeasuredHeight());
+                        int stopY = (int) (RELATIVE_STOP_POS * view.getMeasuredHeight());
+                        segmentLength = stopY - startY;
+
+                        dotView.setVisibility(View.VISIBLE);
+                        dotView.setTranslationY(computeDotPosY(foundBeacon));
+                    }
+                });
 
                 // Note that results are not delivered on UI thread.
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         // Just in case if there are multiple beacons with the same uuid, major, minor.
-                        IBeacon foundBeacon = null;
-                        for (IBeacon rangedBeacon : beaconCollection) {
-                            if (rangedBeacon.getMinor() == (beacon.getMinor()) &&
-                                    rangedBeacon.getMajor() == beacon.getMajor()) {
-                                foundBeacon = rangedBeacon;
-                            }
-                        }
+
                         if (foundBeacon != null) {
                             updateDistanceView(foundBeacon);
                         }
                     }
                 });
 
-            }
-        });
-
-        final View view = findViewById(R.id.sonar);
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                startY = (int) (RELATIVE_START_POS * view.getMeasuredHeight());
-                int stopY = (int) (RELATIVE_STOP_POS * view.getMeasuredHeight());
-                segmentLength = stopY - startY;
-
-                dotView.setVisibility(View.VISIBLE);
-                dotView.setTranslationY(computeDotPosY(beacon));
             }
         });
 
