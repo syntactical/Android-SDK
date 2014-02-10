@@ -23,9 +23,8 @@ android {
 }
 
 dependencies {
-    compile files('../EstimoteSDK/estimote-sdk-preview.jar', '../../AndroidIBeaconLibrary/libs/classes.jar')
-//    compile group: 'com.radiusnetworks', name: 'AndroidIBeaconLibrary', version: '0.7.3@aar'
-    compile group: 'com.google.guava', name: 'guava', version: '15.+'
+//    compile files('../../AndroidIBeaconLibrary/libs/classes.jar')
+    compile group: 'com.radiusnetworks', name: 'AndroidIBeaconLibrary', version: '0.7.3'
 }
 
 task wrapper(type: Wrapper) {
