@@ -29,6 +29,7 @@ public class DistanceBeaconActivity extends Activity implements IBeaconConsumer{
     private int segmentLength = -1;
     private int major;
     private int minor;
+    private double beaconDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +47,21 @@ public class DistanceBeaconActivity extends Activity implements IBeaconConsumer{
 
         beaconManager = IBeaconManager.getInstanceForApplication(this);
         beaconManager.bind(this);
+
+        final View view = findViewById(R.id.sonar);
+        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                startY = (int) (RELATIVE_START_POS * view.getMeasuredHeight());
+                int stopY = (int) (RELATIVE_STOP_POS * view.getMeasuredHeight());
+                segmentLength = stopY - startY;
+
+                dotView.setVisibility(View.VISIBLE);
+                dotView.setTranslationY(computeDotPosY(beaconDistance));
+            }
+        });
     }
 
     @Override
@@ -54,36 +70,17 @@ public class DistanceBeaconActivity extends Activity implements IBeaconConsumer{
             @Override
             public void didRangeBeaconsInRegion(Collection<IBeacon> iBeacons, Region region) {
                 final List<IBeacon> beaconCollection = (List) iBeacons;
-
                 final IBeacon foundBeacon = beaconCollection.get(0);
+                beaconDistance = foundBeacon.getAccuracy();
 
-                final View view = findViewById(R.id.sonar);
-                view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                    @Override
-                    public void onGlobalLayout() {
-                        view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-
-                        startY = (int) (RELATIVE_START_POS * view.getMeasuredHeight());
-                        int stopY = (int) (RELATIVE_STOP_POS * view.getMeasuredHeight());
-                        segmentLength = stopY - startY;
-
-                        dotView.setVisibility(View.VISIBLE);
-                        dotView.setTranslationY(computeDotPosY(foundBeacon));
-                    }
-                });
-
-                // Note that results are not delivered on UI thread.
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        // Just in case if there are multiple beacons with the same uuid, major, minor.
-
                         if (foundBeacon != null) {
-                            updateDistanceView(foundBeacon);
+                            updateDistanceView(beaconDistance);
                         }
                     }
                 });
-
             }
         });
 
@@ -96,17 +93,17 @@ public class DistanceBeaconActivity extends Activity implements IBeaconConsumer{
         }
     }
 
-    private void updateDistanceView(IBeacon foundBeacon) {
+    private void updateDistanceView(double beaconDistance) {
         if (segmentLength == -1) {
             return;
         }
 
-        dotView.animate().translationY(computeDotPosY(foundBeacon)).start();
+        dotView.animate().translationY(computeDotPosY(beaconDistance)).start();
     }
 
-    private int computeDotPosY(IBeacon beacon) {
+    private int computeDotPosY(double beaconDistance) {
         // Let's put dot at the end of the scale when it's further than 6m.
-        double distance = Math.min(beacon.getAccuracy(), 6.0);
+        double distance = Math.min(beaconDistance, 6.0);
         return startY + (int) (segmentLength * (distance / 6.0));
     }
 
