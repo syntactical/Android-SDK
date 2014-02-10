@@ -6,12 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 
-/**
- * Draws distance background that is stretched to parent's height, keeps aspect ration
- * and centers the image.
- *
- * @author wiktor@estimote.com (Wiktor Gworek)
- */
 public class DistanceBackgroundView extends View {
 
   private final Drawable drawable;
