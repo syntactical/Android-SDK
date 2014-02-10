@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
-import com.estimote.sdk.utils.L;
 import com.radiusnetworks.ibeacon.*;
 
 import java.util.ArrayList;
@@ -49,9 +48,6 @@ public class ListBeaconsActivity extends Activity implements IBeaconConsumer {
         ListView list = (ListView) findViewById(R.id.device_list);
         list.setAdapter(adapter);
         //list.setOnItemClickListener(createOnItemClickListener());
-
-        // Configure verbose debug logging.
-        L.enableDebugLogging(true);
 
         // If Bluetooth is not enabled, let user enable it.
         verifyBluetooth();
