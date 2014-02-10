@@ -1,4 +1,4 @@
-package com.estimote.examples.demos;
+package com.thoughtworks.androiddemo;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.radiusnetworks.ibeacon.IBeacon;
-import com.thoughtworks.androiddemo.R;
 
 import java.util.*;
 

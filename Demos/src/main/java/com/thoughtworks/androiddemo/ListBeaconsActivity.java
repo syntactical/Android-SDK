@@ -1,4 +1,4 @@
-package com.estimote.examples.demos;
+package com.thoughtworks.androiddemo;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -9,19 +9,12 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.radiusnetworks.ibeacon.*;
-import com.thoughtworks.androiddemo.R;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Displays list of found beacons sorted by RSSI.
- * Starts new activity with selected beacon if activity was provided.
- *
- * @author wiktorgworek@google.com (Wiktor Gworek)
- */
 public class ListBeaconsActivity extends Activity implements IBeaconConsumer {
 
     private static final String TAG = ListBeaconsActivity.class.getSimpleName();

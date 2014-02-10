@@ -16,11 +16,11 @@
   <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
   <application
-      android:label="Estimote Demos"
+      android:label="Android iBeacon Demo"
       android:theme="@android:style/Theme.Holo.Light">
 
     <activity
-        android:name="com.estimote.examples.demos.ListBeaconsActivity"
+        android:name="com.thoughtworks.androiddemo.ListBeaconsActivity"
         android:label="Select Beacon"
         android:screenOrientation="portrait">
       <intent-filter>
@@ -29,17 +29,13 @@
       </intent-filter>
     </activity>
 
-    <activity android:name="com.estimote.examples.demos.DistanceBeaconActivity"
+    <activity android:name="com.thoughtworks.androiddemo.DistanceBeaconActivity"
               android:label="Distance Demo"
               android:screenOrientation="portrait"/>
 
-    <activity android:name="com.estimote.examples.demos.NotifyDemoActivity"
+    <activity android:name="com.thoughtworks.androiddemo.NotifyDemoActivity"
               android:label="Notify Demo"
               android:screenOrientation="portrait"/>
-
-    <!-- Estimote service responsible for scanning beacons. -->
-    <service android:name="com.estimote.sdk.service.BeaconService"
-             android:exported="false"/>
   </application>
 
 </manifest>

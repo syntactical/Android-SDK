@@ -1,10 +1,9 @@
-package com.estimote.examples.demos;
+package com.thoughtworks.androiddemo;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import com.thoughtworks.androiddemo.R;
 
 /**
  * Shows all available demos.

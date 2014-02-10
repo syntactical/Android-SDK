@@ -1,4 +1,4 @@
-package com.estimote.examples.demos;
+package com.thoughtworks.androiddemo;
 
 import android.app.Activity;
 import android.os.Bundle;
