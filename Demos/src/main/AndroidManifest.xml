@@ -4,38 +4,54 @@
           android:versionCode="1"
           android:versionName="1.0">
 
-  <uses-sdk
-      android:minSdkVersion="18"
-      android:targetSdkVersion="18"/>
+    <uses-sdk
+            android:minSdkVersion="18"
+            android:targetSdkVersion="18"/>
 
-  <!-- Needed permissions in order to scan for beacons. -->
-  <uses-permission android:name="android.permission.BLUETOOTH"/>
-  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <!-- Needed permissions in order to scan for beacons. -->
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
-  <!-- Declaration that this app is usable on phones with Bluetooth Low Energy. -->
-  <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
+    <!-- Declaration that this app is usable on phones with Bluetooth Low Energy. -->
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
-  <application
-      android:label="Android iBeacon Demo"
-      android:theme="@android:style/Theme.Holo.Light">
+    <application
+            android:label="Android iBeacon Demo"
+            android:theme="@android:style/Theme.Holo.Light">
 
-    <activity
-        android:name="com.thoughtworks.androiddemo.ListBeaconsActivity"
-        android:label="Select Beacon"
-        android:screenOrientation="portrait">
-      <intent-filter>
-          <action android:name="android.intent.action.MAIN"/>
-          <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
-    </activity>
+        <activity
+                android:name="com.thoughtworks.androiddemo.ListBeaconsActivity"
+                android:label="Android iBeacon Demo"
+                android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
 
-    <activity android:name="com.thoughtworks.androiddemo.DistanceBeaconActivity"
-              android:label="Distance Demo"
-              android:screenOrientation="portrait"/>
+        <activity android:name="com.thoughtworks.androiddemo.DistanceBeaconActivity"
+                  android:label="Distance Demo"
+                  android:screenOrientation="portrait"/>
 
-    <activity android:name="com.thoughtworks.androiddemo.NotifyDemoActivity"
-              android:label="Notify Demo"
-              android:screenOrientation="portrait"/>
-  </application>
+        <activity android:name="com.thoughtworks.androiddemo.NotifyDemoActivity"
+                  android:label="Notify Demo"
+                  android:screenOrientation="portrait"/>
+
+        <service android:enabled="true"
+                 android:exported="true"
+                 android:isolatedProcess="false"
+                 android:label="iBeacon"
+                 android:name="com.radiusnetworks.ibeacon.service.IBeaconService">
+        </service>
+        <service android:enabled="true"
+                 android:name="com.radiusnetworks.ibeacon.IBeaconIntentProcessor">
+            <meta-data android:name="background" android:value="true"/>
+            <intent-filter
+                    android:priority="1">
+                <action android:name="com.thoughtworks.androiddemo.DID_RANGING"/>
+                <action android:name="com.thoughtworks.androiddemo.DID_MONITORING"/>
+            </intent-filter>
+        </service>
+    </application>
 
 </manifest>

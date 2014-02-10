@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -87,6 +89,7 @@ public class ListBeaconsActivity extends Activity implements IBeaconConsumer {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         } else {
+            Log.i(TAG, "binding beaconManager");
             beaconManager.bind(this);
         }
     }
@@ -132,10 +135,24 @@ public class ListBeaconsActivity extends Activity implements IBeaconConsumer {
         beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<IBeacon> iBeacons, Region region) {
-                List<IBeacon> estimoteBeacons = filterBeacons(iBeacons);
-                getActionBar().setSubtitle("Found beacons: " + estimoteBeacons.size());
-                adapter.replaceWith(estimoteBeacons);
+
+                final List<IBeacon> estimoteBeacons = filterBeacons(iBeacons);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getActionBar().setSubtitle("Found beacons: " + estimoteBeacons.size());
+                        adapter.replaceWith(estimoteBeacons);
+
+                    }
+                });
             }
         });
+
+        try {
+            beaconManager.startRangingBeaconsInRegion(ALL_ESTIMOTE_BEACONS_REGION);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }
