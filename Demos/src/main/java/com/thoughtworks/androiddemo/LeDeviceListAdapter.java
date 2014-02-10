@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import com.radiusnetworks.ibeacon.IBeacon;
+import com.thoughtworks.androiddemo.R;
 
 import java.util.*;
 

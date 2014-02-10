@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.radiusnetworks.ibeacon.*;
+import com.thoughtworks.androiddemo.R;
 
 import java.util.ArrayList;
 import java.util.Collection;

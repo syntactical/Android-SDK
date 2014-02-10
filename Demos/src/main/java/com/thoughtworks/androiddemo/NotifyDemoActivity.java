@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
+import com.thoughtworks.androiddemo.R;
 
 import static com.estimote.sdk.BeaconManager.MonitoringListener;
 

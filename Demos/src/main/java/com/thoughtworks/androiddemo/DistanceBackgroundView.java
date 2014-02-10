@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
+import com.thoughtworks.androiddemo.R;
 
 /**
  * Draws distance background that is stretched to parent's height, keeps aspect ration
